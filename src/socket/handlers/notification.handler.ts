@@ -1,4 +1,4 @@
-import type { Server as SocketServer } from 'socket.io';
+import type { Socket, Server as SocketServer } from 'socket.io';
 import { logger } from '../../utils/logger';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ import { logger } from '../../utils/logger';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function registerNotificationHandler(io: SocketServer): void {
-  io.on('connection', (socket) => {
+  io.on('connection', (socket: Socket) => {
     const userId = socket.data.user?.id as string;
 
     if (!userId) {
@@ -36,7 +36,7 @@ export function registerNotificationHandler(io: SocketServer): void {
       logger.debug(`Notification marked read: ${notificationId} by user:${userId}`);
     });
 
-    socket.on('disconnect', (reason) => {
+    socket.on('disconnect', (reason: string) => {
       logger.debug(`Socket disconnected: user:${userId} — ${reason}`);
     });
   });

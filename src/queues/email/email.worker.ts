@@ -1,4 +1,4 @@
-import { Worker } from 'bullmq';
+import { Job, Worker } from 'bullmq';
 import { bullmqConnection } from '../../config/bullmq';
 import { logger } from '../../utils/logger';
 import { processEmailJob } from './email.processor';
@@ -9,24 +9,24 @@ import { processEmailJob } from './email.processor';
 // Per backend-rules.md: "Log failed jobs with Winston"
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function startEmailWorker(): Worker {
+export function startEmailWorker(): any {
   const worker = new Worker('email-queue', processEmailJob, {
     connection: bullmqConnection,
     concurrency: 5,
   });
 
-  worker.on('completed', (job) => {
+  worker.on('completed', (job: Job) => {
     logger.info(`Email job completed: ${job.name} [${job.id}]`);
   });
 
-  worker.on('failed', (job, err) => {
+  worker.on('failed', (job: Job | undefined, err: Error) => {
     logger.error(`Email job failed: ${job?.name} [${job?.id}]`, {
       error: err.message,
       attempts: job?.attemptsMade,
     });
   });
 
-  worker.on('error', (err) => {
+  worker.on('error', (err: Error) => {
     logger.error(`Email worker error: ${err.message}`);
   });
 

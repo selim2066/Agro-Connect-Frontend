@@ -12,7 +12,8 @@ const devFormat = combine(
   colorize({ all: true }),
   timestamp({ format: 'HH:mm:ss' }),
   errors({ stack: true }),
-  printf(({ level, message, timestamp: ts, stack }) => {
+  printf((info) => {
+    const { level, message, timestamp: ts, stack } = info as { level: string; message: string; timestamp: string; stack?: string };
     return stack
       ? `[${ts}] ${level}: ${message}\n${stack}`
       : `[${ts}] ${level}: ${message}`;
@@ -33,7 +34,7 @@ const prodFormat = combine(
 // Transports
 // ─────────────────────────────────────────────────────────────────────────────
 
-const loggerTransports: Parameters<typeof createLogger>[0]['transports'] = [
+const loggerTransports: any[] = [
   // Combined log — all levels, daily rotation, 14 day retention
   new DailyRotateFile({
     filename: 'logs/combined-%DATE%.log',

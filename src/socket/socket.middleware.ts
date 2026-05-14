@@ -10,7 +10,7 @@ import { logger } from '../utils/logger';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function registerSocketMiddleware(io: SocketServer): void {
-  io.use(async (socket: Socket, next) => {
+  io.use(async (socket: Socket, next: (err?: Error) => void) => {
     try {
       const token = socket.handshake.auth?.token as string | undefined;
 

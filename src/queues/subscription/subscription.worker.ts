@@ -1,4 +1,4 @@
-import { Worker } from 'bullmq';
+import { Job, Worker } from 'bullmq';
 import { bullmqConnection } from '../../config/bullmq';
 import { logger } from '../../utils/logger';
 import { processSubscriptionJob } from './subscription.processor';
@@ -8,24 +8,24 @@ import { processSubscriptionJob } from './subscription.processor';
 // concurrency: 2 — low-frequency, sequential-safe jobs
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function startSubscriptionWorker(): Worker {
+export function startSubscriptionWorker(): any {
   const worker = new Worker('subscription-queue', processSubscriptionJob, {
     connection: bullmqConnection,
     concurrency: 2,
   });
 
-  worker.on('completed', (job) => {
+  worker.on('completed', (job: Job) => {
     logger.info(`Subscription job completed: ${job.name} [${job.id}]`);
   });
 
-  worker.on('failed', (job, err) => {
+  worker.on('failed', (job: Job | undefined, err: Error) => {
     logger.error(`Subscription job failed: ${job?.name} [${job?.id}]`, {
       error: err.message,
       attempts: job?.attemptsMade,
     });
   });
 
-  worker.on('error', (err) => {
+  worker.on('error', (err: Error) => {
     logger.error(`Subscription worker error: ${err.message}`);
   });
 

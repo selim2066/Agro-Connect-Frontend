@@ -67,16 +67,19 @@ export function globalErrorHandler(
   }
 
   // ── 4. Unknown / Unhandled Errors (crash-level) ──────────────────────────
+  const errorMsg = err instanceof Error ? err.message : String(err);
+  const errorStack = err instanceof Error ? err.stack : undefined;
+
   logger.error('Unhandled error:', {
-    message: err instanceof Error ? err.message : String(err),
-    stack: err instanceof Error ? err.stack : undefined,
+    message: errorMsg,
+    stack: errorStack,
   });
 
   res.status(500).json({
     success: false,
-    message: isProd ? 'Something went wrong' : (err instanceof Error ? err.message : 'Unknown error'),
+    message: isProd ? 'Something went wrong' : errorMsg,
     errorCode: ErrorCode.INTERNAL_ERROR,
     // Never expose stack in production
-    ...(isProd ? {} : { stack: err instanceof Error ? err.stack : undefined }),
+    ...(isProd ? {} : { stack: errorStack }),
   });
 }

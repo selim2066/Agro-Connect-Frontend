@@ -35,8 +35,8 @@ const envSchema = z.object({
   SSLCOMMERZ_STORE_PASS: z.string().min(1),
   SSLCOMMERZ_IS_LIVE: z
     .string()
-    .transform((v) => v === 'true')
-    .default('false'),
+    .transform((v: string) => v === 'true')
+    .default(false),
 
   // AI
   GEMINI_API_KEY: z.string().min(1),

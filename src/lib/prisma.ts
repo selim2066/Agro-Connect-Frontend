@@ -10,14 +10,14 @@ import { env } from '../config/env';
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma =
-  globalForPrisma.prisma ??
+  (globalForPrisma.prisma as PrismaClient) ??
   new PrismaClient({
-    datasourceUrl: env.DATABASE_URL,
+    datasourceUrl: env.DATABASE_URL as string,
     log:
       env.NODE_ENV === 'development'
         ? ['query', 'warn', 'error']
         : ['warn', 'error'],
-  });
+  } as any);
 
 if (env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
