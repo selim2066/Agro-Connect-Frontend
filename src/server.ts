@@ -18,9 +18,12 @@ async function bootstrap(): Promise<void> {
     await prisma.$connect();
     logger.info('Database connected');
 
-    // 2. Connect to Redis
-    await redis.connect();
-    // Redis events handle further logging (see lib/redis.ts)
+    // 2. Connect to Redis (optional for core boot)
+    try {
+      await redis.connect();
+    } catch (err) {
+      logger.warn(`Redis connection failed: ${err instanceof Error ? err.message : String(err)}. Background jobs and caching will be disabled.`);
+    }
 
     // 3. Create Express app
     const app = createApp();
@@ -32,7 +35,15 @@ async function bootstrap(): Promise<void> {
     initSocket(httpServer);
 
     // 6. Start BullMQ workers + register cron jobs
-    await startAllWorkers();
+    try {
+      if (redis.status === 'ready') {
+        await startAllWorkers();
+      } else {
+        logger.warn('Skipping BullMQ worker startup because Redis is not connected.');
+      }
+    } catch (err) {
+      logger.error('Failed to start BullMQ workers:', err);
+    }
 
     // 7. Start listening
     httpServer.listen(env.PORT, () => {

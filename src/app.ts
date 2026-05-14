@@ -7,6 +7,8 @@ import { env } from './config/env';
 import { language } from './middleware/language';
 import { globalErrorHandler } from './middleware/globalErrorHandler';
 import { apiRouter } from './routes';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './lib/auth';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Express app factory
@@ -25,6 +27,10 @@ export function createApp(): express.Application {
       credentials: true,
     }),
   );
+
+  // ── Better Auth handler ──────────────────────────────────────────────────
+  // MUST come before express.json() to allow raw stream access
+  app.all('/api/auth/*', toNodeHandler(auth));
 
   // ── Body parsing ──────────────────────────────────────────────────────────
   app.use(express.json({ limit: '1mb' }));

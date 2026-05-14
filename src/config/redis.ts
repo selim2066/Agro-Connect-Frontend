@@ -12,8 +12,11 @@ export const redisOptions: RedisOptions = {
   lazyConnect: true, // connect only when first command is issued
   maxRetriesPerRequest: 3,
   retryStrategy: (times: number) => {
-    if (times > 10) return null; // stop retrying after 10 attempts
-    return Math.min(times * 500, 5000); // exponential backoff, cap 5s
+    if (env.NODE_ENV === 'development') {
+      if (times > 5) return null; // Stop after 5 tries to keep dev terminal clean
+      return Math.min(times * 2000, 30000); // 2s, 4s, 6s...
+    }
+    return Math.min(times * 500, 5000);
   },
   enableReadyCheck: true,
 };

@@ -27,12 +27,13 @@ redis.on('error', (err: Error) => {
 });
 
 redis.on('close', () => {
-  logger.warn('Redis connection closed');
+  // Only log if we were previously connected to avoid boot noise
+  if (redis.status === 'ready') {
+    logger.warn('Redis connection closed');
+  }
 });
 
-redis.on('reconnecting', () => {
-  logger.warn('Redis reconnecting...');
-});
+// Reconnection logging removed to reduce terminal noise during development
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Safe cache helpers — always wrapped in try/catch
