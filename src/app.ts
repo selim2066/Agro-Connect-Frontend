@@ -30,7 +30,7 @@ export function createApp(): express.Application {
 
   // ── Better Auth handler ──────────────────────────────────────────────────
   // MUST come before express.json() to allow raw stream access
-  app.all('/api/auth/*', toNodeHandler(auth));
+  app.all('/api/auth/*path', toNodeHandler(auth));
 
   // ── Body parsing ──────────────────────────────────────────────────────────
   app.use(express.json({ limit: '1mb' }));
