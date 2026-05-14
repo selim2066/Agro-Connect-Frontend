@@ -12,7 +12,6 @@ declare global {
         id: string;
         email: string;
         role: 'CUSTOMER' | 'SELLER' | 'ADMIN';
-        isVerified: boolean;
       };
 
       /** Language preference — attached by language middleware */
