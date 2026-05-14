@@ -1,3 +1,4 @@
+import type { Request, Response, NextFunction } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
 import { auth } from '../lib/auth';
 import { AppError } from '../errors/AppError';
